@@ -23,3 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 **/**.env
+
+# Arquivos grandes de ML
+artefacts/modelo_glico_diabetes.joblib
