@@ -47,6 +47,25 @@
   z-index: 100;
 }
 
+.logout-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-family: 'Gantari', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 84, 87, 0.4);
+  border-color: rgba(255, 84, 87, 0.6);
+}
+
+
 .dashboard-logo {
   font-size: 24px;
   font-weight: 600;
@@ -138,9 +157,30 @@
   width: fit-content;
 }
 
-.status-low { background: rgba(76, 175, 80, 0.2); color: #81c784; border: 1px solid rgba(76, 175, 80, 0.3); }
+.status-low    { background: rgba(76, 175, 80, 0.2);  color: #81c784; border: 1px solid rgba(76, 175, 80, 0.3);  }
 .status-medium { background: rgba(255, 152, 0, 0.2); color: #ffb74d; border: 1px solid rgba(255, 152, 0, 0.3); }
-.status-high { background: rgba(244, 67, 54, 0.2); color: #e57373; border: 1px solid rgba(244, 67, 54, 0.3); }
+.status-high   { background: rgba(244, 67, 54, 0.2);  color: #e57373; border: 1px solid rgba(244, 67, 54, 0.3);  }
+
+.card-action-btn {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 8px 20px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-family: 'Gantari', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.card-action-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
 
 /* History Section */
 .history-section {

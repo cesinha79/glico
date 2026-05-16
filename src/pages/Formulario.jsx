@@ -1,10 +1,11 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./Formulario.css";
 
 const perguntas = [
   { tipo: "simnao", texto: "Você possui pressão alta?" },
   { tipo: "simnao", texto: "Você possui colesterol alto?" },
-  { tipo: "imc", texto: "Insira seu peso e altura" },
+  { tipo: "imc",    texto: "Insira seu peso e altura" },
   { tipo: "simnao", texto: "Você fuma?" },
   { tipo: "simnao", texto: "Pratica atividade física regularmente?" },
   { tipo: "simnao", texto: "Já teve algum problema cardíaco ou ataque cardíaco?" },
@@ -15,11 +16,12 @@ const perguntas = [
   { tipo: "simnao", texto: "Você consome bebida alcoólica com frequência?" },
   { tipo: "simnao", texto: "Você consome frutas com frequência?" },
   { tipo: "simnao", texto: "Você consome vegetais com frequência?" },
-  { tipo: "sexo", texto: "Qual é o seu sexo?" },
-  { tipo: "idade", texto: "Quantos anos você tem?" },
+  { tipo: "sexo",   texto: "Qual é o seu sexo?" },
+  { tipo: "idade",  texto: "Quantos anos você tem?" },
 ];
 
 export default function Formulario() {
+  const navigate = useNavigate();
   const [etapa, setEtapa] = useState(0);
   const [respostas, setRespostas] = useState({});
 
@@ -27,31 +29,53 @@ export default function Formulario() {
   const progresso = ((etapa + 1) / perguntas.length) * 100;
 
   const salvarResposta = (valor) => {
-    setRespostas({
-      ...respostas,
-      [etapa]: valor,
-    });
+    setRespostas({ ...respostas, [etapa]: valor });
   };
 
   const proxima = () => {
     if (etapa < perguntas.length - 1) {
       setEtapa(etapa + 1);
+    } else {
+      // Última pergunta: navega para resultados passando respostas
+      navigate("/resultados", { state: { respostas } });
     }
   };
 
   const anterior = () => {
-    if (etapa > 0) {
-      setEtapa(etapa - 1);
-    }
+    if (etapa > 0) setEtapa(etapa - 1);
   };
+
+  const respostaAtual = respostas[etapa];
 
   const renderPergunta = () => {
     switch (perguntaAtual.tipo) {
       case "simnao":
         return (
           <div className="opcoes">
-            <button onClick={() => salvarResposta("Sim")}>Sim</button>
-            <button onClick={() => salvarResposta("Não")}>Não</button>
+            {["Sim", "Não"].map((op) => (
+              <button
+                key={op}
+                className={respostaAtual === op ? "selecionado" : ""}
+                onClick={() => salvarResposta(op)}
+              >
+                {op}
+              </button>
+            ))}
+          </div>
+        );
+
+      case "sexo":
+        return (
+          <div className="opcoes">
+            {["Masculino", "Feminino"].map((op) => (
+              <button
+                key={op}
+                className={respostaAtual === op ? "selecionado" : ""}
+                onClick={() => salvarResposta(op)}
+              >
+                {op}
+              </button>
+            ))}
           </div>
         );
 
@@ -60,25 +84,24 @@ export default function Formulario() {
         return (
           <input
             type="number"
-            placeholder="Digite aqui"
+            placeholder={perguntaAtual.tipo === "idade" ? "Ex: 35" : "Ex: 5"}
+            min={0}
+            max={perguntaAtual.tipo === "numero" ? 30 : 120}
+            value={respostaAtual ?? ""}
             onChange={(e) => salvarResposta(e.target.value)}
           />
-        );
-
-      case "sexo":
-        return (
-          <div className="opcoes">
-            <button onClick={() => salvarResposta("Masculino")}>Masculino</button>
-            <button onClick={() => salvarResposta("Feminino")}>Feminino</button>
-          </div>
         );
 
       case "escala":
         return (
           <div className="escala">
-            <span>Boa</span>
+            <span>Excelente</span>
             {[1, 2, 3, 4, 5].map((item) => (
-              <button key={item} onClick={() => salvarResposta(item)}>
+              <button
+                key={item}
+                className={respostaAtual === item ? "selecionado" : ""}
+                onClick={() => salvarResposta(item)}
+              >
                 {item}
               </button>
             ))}
@@ -91,22 +114,20 @@ export default function Formulario() {
           <div className="imc-box">
             <input
               type="number"
-              placeholder="Peso"
+              placeholder="Peso (kg)"
+              min={1}
+              value={respostaAtual?.peso ?? ""}
               onChange={(e) =>
-                salvarResposta({
-                  ...respostas[etapa],
-                  peso: e.target.value,
-                })
+                salvarResposta({ ...respostaAtual, peso: e.target.value })
               }
             />
             <input
               type="number"
-              placeholder="Altura"
+              placeholder="Altura (cm)"
+              min={1}
+              value={respostaAtual?.altura ?? ""}
               onChange={(e) =>
-                salvarResposta({
-                  ...respostas[etapa],
-                  altura: e.target.value,
-                })
+                salvarResposta({ ...respostaAtual, altura: e.target.value })
               }
             />
           </div>
@@ -122,9 +143,9 @@ export default function Formulario() {
       <header className="topo">
         <div className="logo">GLICO</div>
         <nav>
-          <span className="ativo">Formulário</span>
-          <span>Resultados</span>
-          <span>Conta</span>
+          <Link to="/dashboard">Dashboard</Link>
+          <Link to="/formulario" className="ativo">Formulário</Link>
+          <Link to="/resultados">Resultados</Link>
         </nav>
       </header>
 
@@ -139,7 +160,6 @@ export default function Formulario() {
       <div className="pergunta-box">
         <p className="questao">Questão {etapa + 1}</p>
         <h2>{perguntaAtual.texto}</h2>
-
         {renderPergunta()}
       </div>
 
@@ -147,9 +167,8 @@ export default function Formulario() {
         <button onClick={anterior} disabled={etapa === 0}>
           Anterior
         </button>
-
         <button onClick={proxima}>
-          {etapa === perguntas.length - 1 ? "Finalizar" : "Próxima"}
+          {etapa === perguntas.length - 1 ? "Ver Resultado" : "Próxima"}
         </button>
       </div>
     </div>
