@@ -5,6 +5,7 @@ import './Login.css';
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
@@ -47,6 +48,70 @@ const Login = () => {
       setMessage('Falha de conexão com o servidor.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const [loginData, setLoginData] = useState({ email: '', senha: '' });
+  const [registerData, setRegisterData] = useState({ nome: '', email: '', senha: '' });
+
+  const [erro, setErro] = useState('');
+  const [sucesso, setSucesso] = useState('');
+  const [carregando, setCarregando] = useState(false);
+
+  const limparMensagens = () => { setErro(''); setSucesso(''); };
+
+  const trocarAba = (paraLogin) => { setIsLogin(paraLogin); limparMensagens(); };
+
+  // ── LOGIN ──────────────────────────────────────────────
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    limparMensagens();
+    if (!loginData.email || !loginData.senha) { setErro('Preencha todos os campos.'); return; }
+
+    setCarregando(true);
+    try {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loginData),
+      });
+      const data = await response.json();
+      if (!response.ok) { setErro(data.erro || 'Erro ao fazer login.'); return; }
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('nome', data.nome);
+      navigate('/dashboard');
+    } catch {
+      setErro('Não foi possível conectar ao servidor. Verifique se o backend está rodando.');
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  // ── REGISTRO ───────────────────────────────────────────
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    limparMensagens();
+    if (!registerData.nome || !registerData.email || !registerData.senha) { setErro('Preencha todos os campos.'); return; }
+    if (registerData.senha.length < 6) { setErro('A senha deve ter no mínimo 6 caracteres.'); return; }
+
+    setCarregando(true);
+    try {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(registerData),
+      });
+      const data = await response.json();
+      if (!response.ok) { setErro(data.erro || 'Erro ao criar conta.'); return; }
+
+      setSucesso('Conta criada! Faça login para continuar.');
+      setRegisterData({ nome: '', email: '', senha: '' });
+      setTimeout(() => trocarAba(true), 1500);
+    } catch {
+      setErro('Não foi possível conectar ao servidor. Verifique se o backend está rodando.');
+    } finally {
+      setCarregando(false);
     }
   };
 
