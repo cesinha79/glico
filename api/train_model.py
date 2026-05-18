@@ -26,6 +26,7 @@ FEATURES = [
     'PhysHlth',
     'Sex',
     'Age',
+    'Education',
 ]
 
 
